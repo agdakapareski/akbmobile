@@ -48,7 +48,7 @@ class _PesanMenuState extends State<PesanMenu> {
 
   //fungsi get menu dari API
   Future<List<Data>> fetchData() async {
-    var url = 'http://192.168.1.8:8000/api/menuMobile1';
+    var url = 'http://192.168.1.6:8000/api/menuMobile1';
     var response = await http.get(Uri.parse(url));
 
     // ignore: deprecated_member_use
@@ -65,19 +65,22 @@ class _PesanMenuState extends State<PesanMenu> {
   }
 
   //fungsi post order(pesanan) ke API
-  Future<OrderModel> createOrder(String nama_customer, String nama_menu, String harga, String jumlah_pesanan, String subtotal, String status_pesanan) async {
-    var url = Uri.parse('http://192.168.1.8:8000/api/pesananMobile');
-    final response = await http.post(
-      url,
-      body: {
-        "nama_customer": nama_customer,
-        "nama_menu": nama_menu,
-        "harga": harga,
-        "jumlah_pesanan": jumlah_pesanan,
-        "subtotal": subtotal,
-        "status_pesanan": status_pesanan
-      }
-    );
+  Future<OrderModel> createOrder(
+      String nama_customer,
+      String nama_menu,
+      String harga,
+      String jumlah_pesanan,
+      String subtotal,
+      String status_pesanan) async {
+    var url = Uri.parse('http://192.168.1.6:8000/api/pesananMobile');
+    final response = await http.post(url, body: {
+      "nama_customer": nama_customer,
+      "nama_menu": nama_menu,
+      "harga": harga,
+      "jumlah_pesanan": jumlah_pesanan,
+      "subtotal": subtotal,
+      "status_pesanan": status_pesanan
+    });
     return OrderModel.fromJson(json.decode(response.body));
   }
 
@@ -105,13 +108,21 @@ class _PesanMenuState extends State<PesanMenu> {
         centerTitle: true,
         backgroundColor: Colors.grey[900],
         title: Text("Daftar Menu"),
-        leading: IconButton(icon: Icon(Icons.qr_code), onPressed: () => status == 0? scanQr() : createAlertDialog(context, "Sudah scan :)")),
+        leading: IconButton(
+            icon: Icon(Icons.qr_code),
+            onPressed: () => status == 0
+                ? scanQr()
+                : createAlertDialog(context, "Sudah scan :)")),
         actions: [
           IconButton(
-            icon: Icon(Icons.assignment), onPressed: () {
-              Route route = MaterialPageRoute(builder: (context) => Transaksi(qrCode));
-              status == 1 ? Navigator.push(context, route) : createAlertDialog(context, "Scan Qr terlebih dahulu");
-          })
+              icon: Icon(Icons.assignment),
+              onPressed: () {
+                Route route =
+                    MaterialPageRoute(builder: (context) => Transaksi(qrCode));
+                status == 1
+                    ? Navigator.push(context, route)
+                    : createAlertDialog(context, "Scan Qr terlebih dahulu");
+              })
         ],
       ),
       body: Padding(
@@ -133,7 +144,10 @@ class _PesanMenuState extends State<PesanMenu> {
       child: TextField(
         style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
-            hintText: 'Search...', prefixIcon: Icon(Icons.search, color: Colors.white), hintStyle: TextStyle(color: Colors.white), border: InputBorder.none),
+            hintText: 'Search...',
+            prefixIcon: Icon(Icons.search, color: Colors.white),
+            hintStyle: TextStyle(color: Colors.white),
+            border: InputBorder.none),
         onChanged: (text) {
           text = text.toLowerCase();
           setState(() {
@@ -158,34 +172,34 @@ class _PesanMenuState extends State<PesanMenu> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
                   Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            _datasForDisplay[i].nama_menu,
-                            style: TextStyle(
-                                fontSize: 22, fontWeight: FontWeight.bold),
-                          ),
-                          Text(
-                            _datasForDisplay[i].kategori_menu,
-                            style: TextStyle(color: Colors.orange),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            _datasForDisplay[i].deskripsi_menu,
-                            style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                        ],
-                      ),
-                    )
-                  ),
+                      child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          _datasForDisplay[i].nama_menu,
+                          style: TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          _datasForDisplay[i].kategori_menu,
+                          style: TextStyle(color: Colors.orange),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          _datasForDisplay[i].deskripsi_menu,
+                          style: TextStyle(
+                              color: Colors.grey.shade600, fontSize: 13),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    ),
+                  )),
                   Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Image.asset(
@@ -203,35 +217,37 @@ class _PesanMenuState extends State<PesanMenu> {
                     padding: EdgeInsets.all(8.0),
                     child: Text(
                       "Rp. " + _datasForDisplay[i].harga.toString(),
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                     ),
                   ),
                   Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          SizedBox(
-                            width: 150,
-                            child: ElevatedButton(
-                                onPressed: () {
-                                  if (status == 0) {
-                                    createAlertDialog(context, "Scan Qr terlebih dahulu");
-                                  } else if (status == 1) {
-                                    createDialogOrder(context, i);
-                                  }
-                                },
-                                child: Text("Order"),
-                                style: ButtonStyle(
-                                  backgroundColor:
-                                  MaterialStateProperty.all<Color>(Colors.orange),
-                                )),
-                          )
-                        ],
-                      ),
-                    )
-                  )
+                      child: Padding(
+                    padding: EdgeInsets.only(right: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 150,
+                          child: ElevatedButton(
+                              onPressed: () {
+                                if (status == 0) {
+                                  createAlertDialog(
+                                      context, "Scan Qr terlebih dahulu");
+                                } else if (status == 1) {
+                                  createDialogOrder(context, i);
+                                }
+                              },
+                              child: Text("Order"),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.orange),
+                              )),
+                        )
+                      ],
+                    ),
+                  ))
                 ],
               ),
             ],
@@ -271,55 +287,55 @@ class _PesanMenuState extends State<PesanMenu> {
                   SizedBox(
                     height: 10,
                   ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        flex: 1,
-                        child: TextFormField(
-                          controller: _jumlahController,
-                          keyboardType: TextInputType.numberWithOptions(
-                              decimal: false, signed: false),
-                          inputFormatters: <TextInputFormatter>[
-                            // ignore: deprecated_member_use
-                            WhitelistingTextInputFormatter.digitsOnly
-                          ],
-                        ),
-                      ),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          MaterialButton(
-                            minWidth: 3.0,
-                            child: Icon(Icons.remove_circle),
-                            onPressed: () {
-                              int currentValue = int.parse(_jumlahController.text);
-                              setState(() {
-                                if(_jumlahController.text != "1") {
-                                  currentValue--;
-                                }
-                                _jumlahController.text =
-                                    (currentValue).toString(); // incrementing value
-                              });
-                            },
-                          ),
-                          MaterialButton(
-                            minWidth: 3.0,
-                            child: Icon(Icons.add_circle),
-                            onPressed: () {
-                              int currentValue = int.parse(_jumlahController.text);
-                              setState(() {
-                                print("Setting state");
-                                currentValue++;
-                                _jumlahController.text =
-                                    (currentValue).toString(); // decrementing value
-                              });
-                            },
-                          ),
+                  Row(children: <Widget>[
+                    Expanded(
+                      flex: 1,
+                      child: TextFormField(
+                        controller: _jumlahController,
+                        keyboardType: TextInputType.numberWithOptions(
+                            decimal: false, signed: false),
+                        inputFormatters: <TextInputFormatter>[
+                          // ignore: deprecated_member_use
+                          WhitelistingTextInputFormatter.digitsOnly
                         ],
                       ),
-                    ]
-                  ),
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        MaterialButton(
+                          minWidth: 3.0,
+                          child: Icon(Icons.remove_circle),
+                          onPressed: () {
+                            int currentValue =
+                                int.parse(_jumlahController.text);
+                            setState(() {
+                              if (_jumlahController.text != "1") {
+                                currentValue--;
+                              }
+                              _jumlahController.text = (currentValue)
+                                  .toString(); // incrementing value
+                            });
+                          },
+                        ),
+                        MaterialButton(
+                          minWidth: 3.0,
+                          child: Icon(Icons.add_circle),
+                          onPressed: () {
+                            int currentValue =
+                                int.parse(_jumlahController.text);
+                            setState(() {
+                              print("Setting state");
+                              currentValue++;
+                              _jumlahController.text = (currentValue)
+                                  .toString(); // decrementing value
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ]),
                   SizedBox(
                     height: 10,
                   ),
@@ -327,39 +343,52 @@ class _PesanMenuState extends State<PesanMenu> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Expanded(
-                        child: ElevatedButton(
-                          child: Text("Batal", style: TextStyle(color: Colors.orange),),
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white)),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        )
+                          child: ElevatedButton(
+                        child: Text(
+                          "Batal",
+                          style: TextStyle(color: Colors.orange),
+                        ),
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white)),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      )),
+                      SizedBox(
+                        width: 5,
                       ),
-                      SizedBox(width: 5,),
                       Expanded(
                           child: ElevatedButton(
-                            child: Text("Pesan"),
-                            style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<Color>(
-                                    Colors.orange)),
-                            onPressed: () async {
-                              final String nama_customer = qrCode;
-                              final String nama_menu = _datasForDisplay[i].nama_menu;
-                              final String harga = _datasForDisplay[i].harga.toString();
-                              final String jumlah_pesanan = _jumlahController.text;
-                              int subtotal = int.parse(_jumlahController.text) * _datasForDisplay[i].harga;
-                              final String totalPesanan = subtotal.toString();
-                              final String status_pesanan = "Sedang Disiapkan";
-                              final OrderModel orderModel = await createOrder(nama_customer, nama_menu, harga, jumlah_pesanan, totalPesanan, status_pesanan);
-                              setState(() {
-                                _orderModel = orderModel;
-                                _jumlahController.text = "1";
-                              });
-                              Navigator.pop(context);
-                            },
-                          )),
+                        child: Text("Pesan"),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.orange)),
+                        onPressed: () async {
+                          final String nama_customer = qrCode;
+                          final String nama_menu =
+                              _datasForDisplay[i].nama_menu;
+                          final String harga =
+                              _datasForDisplay[i].harga.toString();
+                          final String jumlah_pesanan = _jumlahController.text;
+                          int subtotal = int.parse(_jumlahController.text) *
+                              _datasForDisplay[i].harga;
+                          final String totalPesanan = subtotal.toString();
+                          final String status_pesanan = "Sedang Disiapkan";
+                          final OrderModel orderModel = await createOrder(
+                              nama_customer,
+                              nama_menu,
+                              harga,
+                              jumlah_pesanan,
+                              totalPesanan,
+                              status_pesanan);
+                          setState(() {
+                            _orderModel = orderModel;
+                            _jumlahController.text = "1";
+                          });
+                          Navigator.pop(context);
+                        },
+                      )),
                     ],
                   )
                 ],
